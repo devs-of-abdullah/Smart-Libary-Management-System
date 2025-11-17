@@ -3,7 +3,7 @@
  ** Overview **
 
 The Smart Library Management System (SLMS) is a backend API built with ASP.NET Core 8 and Entity Framework Core 8.
-It manages books, users, and borrowing operations for a university library workflow.
+It manages books, users, and borrowing operations for a library workflow.
 Includes JWT authentication, role-based access, soft deletes, and late-fee tracking.
 
  ** Features ** 
