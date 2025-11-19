@@ -16,21 +16,22 @@ namespace Data.Repositories
 
         public async Task<IEnumerable<Book>> GetAllAsync()
         {
-            return await _context.Books.Include(b => b.Genre).Include(b => b.Publisher).Include(b => b.BookAuthors)
-                .ThenInclude(ba => ba.Author).Include(b => b.Loans).Include(b => b.Reservations) .ToListAsync();
+            return await _context.Books.Include(b => b.Genre).Include(b => b.Publisher).Include(a => a.Author)
+                .Include(b => b.Loans).Include(b => b.Reservations) .ToListAsync();
         }
 
         public async Task<Book?> GetByIdAsync(int id)
         {
-            return await _context.Books.Include(b => b.Genre).Include(b => b.Publisher).Include(b => b.BookAuthors)
-            .ThenInclude(ba => ba.Author).Include(b => b.Loans).Include(b => b.Reservations).FirstOrDefaultAsync(b => b.Id == id);
+            return await _context.Books.Include(b => b.Genre).Include(b => b.Publisher).Include(a=> a.Author)
+            .Include(ba => ba.Author).Include(b => b.Loans).Include(b => b.Reservations).FirstOrDefaultAsync(b => b.Id == id);
         }
 
-        public Task<Book?> AddAsync(Book book)
+        public async Task<Book?> AddAsync(Book book)
         {
             _context.Books.Add(book);
+            await _context.SaveChangesAsync();
 
-            return Task.FromResult<Book?>(book);
+            return book;
 
         }
 
@@ -41,6 +42,7 @@ namespace Data.Repositories
 
             existing.Title = book.Title;
             existing.ISBN = book.ISBN;
+            existing.Author = book.Author;
             existing.PublicationYear = book.PublicationYear;
             existing.CopiesTotal = book.CopiesTotal;
             existing.CopiesAvailable = book.CopiesAvailable;

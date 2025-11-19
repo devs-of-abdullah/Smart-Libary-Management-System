@@ -1,4 +1,3 @@
-using Business.Auth;
 using Business.Interfaces;
 using Business.Services;
 using Data;
@@ -58,7 +57,7 @@ builder.Services.AddAuthentication(options =>
 
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IStaffRepository, StaffRepository>();
-builder.Services.AddScoped<IAuthService, AuthService>();
+builder.Services.AddScoped<IStaffService, StaffService>();
 
 builder.Services.AddScoped<IAuthorRepository, AuthorRepository>();
 builder.Services.AddScoped<IAuthorService,AuthorService>();
@@ -72,8 +71,7 @@ builder.Services.AddScoped<ILoanRepository, LoanRepository>();
 builder.Services.AddScoped<IReservationService, ReservationService>();
 builder.Services.AddScoped<IReservationRepository,ReservationRepository>();
 
-builder.Services.AddScoped<IBookAuthorService, BookAuthorService>();
-builder.Services.AddScoped<IBookAuthorRepository, BookAuthorRepository>();
+
 
 builder.Services.AddScoped<IFineService, FineService>();
 builder.Services.AddScoped<IFineRepository, FineRepository>();

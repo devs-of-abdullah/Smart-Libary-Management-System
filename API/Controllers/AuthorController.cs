@@ -1,105 +1,90 @@
-﻿using Business.DTOs;
+﻿using API.DTOs;
 using Business.Interfaces;
 using Entity;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
-[Route("api/[controller]")]
-[ApiController]
-[Authorize]
-public class AuthorController : ControllerBase
+namespace API.Controllers
 {
-    private readonly IAuthorService _authorService;
-
-    public AuthorController(IAuthorService authorService)
+    [ApiController]
+    [Route("api/[controller]")]
+    [Authorize]
+    public class AuthorController : ControllerBase
     {
-        _authorService = authorService;
-    }
+        private readonly IAuthorService _authorService;
 
-    [HttpGet(Name = "GetAllAuthors")]
-    public async Task<ActionResult<IEnumerable<AuthorDto>>> GetAll()
-    {
-        var authors = await _authorService.GetAllAuthorsAsync();
-        var result = authors.Select(a => new AuthorDto
+        public AuthorController(IAuthorService authorService)
         {
-            Id = a.Id,
-            FirstName = a.FirstName,
-            LastName = a.LastName,
-            Books = a.BookAuthors?.Select(ba => new BookSimpleDto
+            _authorService = authorService;
+        }
+
+
+        [HttpGet]
+        public async Task<ActionResult<IEnumerable<AuthorDto>>> GetAllAuthors()
+        {
+            var authors = await _authorService.GetAllAuthorsAsync();
+
+            var result = authors.Select(a => new AuthorDto
+            { Id = a.Id,
+                FullName = a.FirstName + " " + a.LastName,
+                BirthYear = a.BirthYear,
+            });
+            return Ok(result);
+        }
+        [HttpGet("{id}")]
+        public async Task<ActionResult<AuthorDto>> GetAuthorById(int id)
+        {
+            var resutl = await _authorService.GetAuthorByIdAsync(id);
+            return Ok(resutl);
+        }
+        [HttpPost]
+        public async Task<ActionResult> AddAuthor(CreateAuthorDto dto)
+        {
+            var Author = new Author
             {
-                Id = ba.Book!.Id,
-                Title = ba.Book.Title,
-                ISBN = ba.Book.ISBN
-            }).ToList()
-        });
+                FirstName = dto.FirstName,
+                LastName = dto.LastName,
+                BirthYear = dto.BirthYear,
 
-        return Ok(result);
-    }
+            };
 
-    [HttpGet("{id}", Name = "GetAuthorById")]
-    public async Task<ActionResult<AuthorDto>> GetById(int id)
-    {
-        var author = await _authorService.GetAuthorByIdAsync(id);
-        if (author == null) return NotFound();
+            await _authorService.AddAuthorAsync(Author);
+            return Ok(Author);
+        }
 
-        var result = new AuthorDto
+        [HttpPut] 
+        public async Task<ActionResult> UpdateAuthorById(int id, UpdateAuthorDto dto)
         {
-            Id = author.Id,
-            FirstName = author.FirstName,
-            LastName = author.LastName,
-            Books = author.BookAuthors?.Select(ba => new BookSimpleDto
-            {
-                Id = ba.Book!.Id,
-                Title = ba.Book.Title,
-                ISBN = ba.Book.ISBN
-            }).ToList()
-        };
+            if(id != dto.Id)
+                return BadRequest("ID not exists.");
 
-        return Ok(result);
-    }
+            var existing = await _authorService.GetAuthorByIdAsync(id);
+            if (existing == null) return NotFound("Book not found.");
 
-    [HttpPost(Name = "CreateAuthor")]
-    public async Task<ActionResult<AuthorDto>> Create([FromBody] AuthorDto authorDto)
-    {
-        if (!ModelState.IsValid) return BadRequest(ModelState);
 
-        var author = new Author
+            existing.FirstName = dto.FirstName;
+            existing.LastName = dto.LastName;
+            existing.BirthYear = dto.BirthYear;
+
+
+            await _authorService.UpdateAuthorAsync(existing);
+
+            return NoContent();
+
+
+
+
+        }
+        [HttpDelete("{id}")]
+        public async Task<ActionResult> DeleteAuthorAsync(int id )
         {
-            FirstName = authorDto.FirstName,
-            LastName = authorDto.LastName
-        };
+                var a = _authorService.GetAuthorByIdAsync(id);
+            if (a == null) return BadRequest("Author not found");
 
-        await _authorService.AddAuthorAsync(author);
 
-        authorDto.Id = author.Id;
+            await _authorService.DeleteAuthorAsync(id);
 
-        return CreatedAtRoute("GetAuthorById", new { id = author.Id }, authorDto);
-    }
-
-    [HttpPut("{id}", Name = "UpdateAuthor")]
-    public async Task<IActionResult> Update(int id, [FromBody] AuthorDto authorDto)
-    {
-        if (!ModelState.IsValid) return BadRequest(ModelState);
-        if (id != authorDto.Id) return BadRequest();
-
-        var existing = await _authorService.GetAuthorByIdAsync(id);
-        if (existing == null) return NotFound();
-
-        existing.FirstName = authorDto.FirstName;
-        existing.LastName = authorDto.LastName;
-
-        await _authorService.UpdateAuthorAsync(existing);
-        return NoContent();
-    }
-
-    [HttpDelete("{id}", Name = "DeleteAuthor")]
-    public async Task<IActionResult> Delete(int id)
-    {
-        var existing = await _authorService.GetAuthorByIdAsync(id);
-        if (existing == null) return NotFound();
-
-        await _authorService.DeleteAuthorAsync(id);
-        return NoContent();
+            return NoContent();
+        }
     }
 }
-

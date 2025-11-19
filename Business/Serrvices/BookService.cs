@@ -13,29 +13,23 @@ namespace Business.Services
             _bookRepo = bookRepo;
         }
 
-        public async Task<IEnumerable<Book>> GetAllBooksAsync()
-        {
-            return await _bookRepo.GetAllAsync();
-        }
+        public Task<IEnumerable<Book>> GetAllBooksAsync() =>
+            _bookRepo.GetAllAsync();
 
-        public async Task<Book?> GetBookByIdAsync(int id)
-        {
-            return await _bookRepo.GetByIdAsync(id);
-        }
+        public Task<Book?> GetBookByIdAsync(int id) =>
+            _bookRepo.GetByIdAsync(id);
 
-        public async Task AddBookAsync(Book book)
-        {
-            await _bookRepo.AddAsync(book);
-        }
+        public Task<Book?> AddBookAsync(Book book) =>
+            _bookRepo.AddAsync(book);
 
-        public async Task UpdateBookAsync(Book book)
-        {
-            await _bookRepo.UpdateAsync(book);
-        }
+        public Task<Book?> UpdateBookAsync(Book book) =>
+            _bookRepo.UpdateAsync(book);
 
-        public async Task DeleteBookAsync(int id)
-        {
-            await _bookRepo.DeleteAsync(id);
-        }
+        public Task<bool> DeleteBookAsync(int id) =>
+            _bookRepo.DeleteAsync(id);
+
+        public Task<bool> ExistsAsync(int id) =>
+            _bookRepo.ExistsAsync(id);
     }
 }
+

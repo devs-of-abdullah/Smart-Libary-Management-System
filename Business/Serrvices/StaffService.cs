@@ -1,32 +1,31 @@
-﻿using Business.Auth;
-using Business.DTOs;
+﻿using Business.Interfaces;
 using Data;
 using Entity;
 using Microsoft.EntityFrameworkCore;
 
-public class AuthService : IAuthService
+public class StaffService : IStaffService
 {
     private readonly AppDbContext _context;
     private readonly JwtService _jwt;
 
-    public AuthService(AppDbContext context, JwtService jwt)
+    public StaffService(AppDbContext context, JwtService jwt)
     {
         _context = context;
         _jwt = jwt;
     }
 
-    public async Task<bool> RegisterStaffAsync(StaffRegisterDto dto)
+    public async Task<bool> RegisterStaffAsync(string? FirstName, string? LastName, string Username, string Password, string Role)
     {
-        if (await _context.Staff.AnyAsync(s => s.Username == dto.Username))
+        if (await _context.Staff.AnyAsync(s => s.Username == Username))
             return false;
 
         var staff = new Staff
         {
-            FirstName = dto.FirstName,
-            LastName = dto.LastName,
-            Username = dto.Username,
-            HashedPassword = PasswordHelper.HashPassword(dto.Password),
-            Role = dto.Role,
+            FirstName = FirstName,
+            LastName = LastName,
+            Username = Username,
+            HashedPassword = PasswordHelper.HashPassword(Password),
+            Role = Role,
             HireDate = DateTime.UtcNow,
             IsActive = true
         };
@@ -46,6 +45,7 @@ public class AuthService : IAuthService
         if (!PasswordHelper.VerifyPassword(password, staff.HashedPassword))
             return null;
 
+        
         return _jwt.GenerateToken(staff.Id, staff.Role);
     }
 }

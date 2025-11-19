@@ -14,12 +14,12 @@ namespace Data.Repositories
 
         public async Task<IEnumerable<Author>> GetAllAsync()
         {
-            return await _context.Authors.Include(a => a.BookAuthors).ThenInclude(b => b.Book).ToListAsync();
+            return await _context.Authors.ToListAsync();
         }
 
         public async Task<Author?> GetByIdAsync(int id)
         {
-            return await _context.Authors.Include(a => a.BookAuthors).ThenInclude(ba => ba.Book).FirstOrDefaultAsync(a => a.Id == id);
+            return await _context.Authors.Include(a => a.Id == id).FirstOrDefaultAsync();
         }
 
         public async Task<Author?> AddAsync(Author author)

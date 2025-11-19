@@ -1,4 +1,5 @@
-﻿using Entity;
+﻿
+using Entity;
 
 namespace Business.Interfaces
 {
@@ -6,8 +7,9 @@ namespace Business.Interfaces
     {
         Task<IEnumerable<Book>> GetAllBooksAsync();
         Task<Book?> GetBookByIdAsync(int id);
-        Task AddBookAsync(Book book);
-        Task UpdateBookAsync(Book book);
-        Task DeleteBookAsync(int id);
+        Task<Book?> AddBookAsync(Book book);
+        Task<Book?> UpdateBookAsync(Book book);
+        Task<bool> DeleteBookAsync(int id);
+        Task<bool> ExistsAsync(int id);
     }
 }

@@ -1,22 +1,23 @@
-﻿using Business.Auth;
-using Business.DTOs;
+﻿using API.DTOs;
+using Business.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 
 [ApiController]
 [Route("api/auth/staff")]
-public class AuthController : ControllerBase
+public class StaffController : ControllerBase
 {
-    private readonly IAuthService _authService;
+    private readonly IStaffService _authService;
 
-    public AuthController(IAuthService authService)
+    public StaffController(IStaffService authService)
     {
         _authService = authService;
     }
 
     [HttpPost("register")]
-    public async Task<IActionResult> Register(StaffRegisterDto dto)
+    public async Task<IActionResult> Register(RegisterStaffDto dto)
     {
-        var result = await _authService.RegisterStaffAsync(dto);
+       
+        var result = await _authService.RegisterStaffAsync(dto.FirstName, dto.LastName, dto.Username, dto.Password, dto.Role);
 
         if (!result)
             return BadRequest("Username already in use.");
@@ -34,4 +35,7 @@ public class AuthController : ControllerBase
 
         return Ok(new { Token = token });
     }
+    
+
 }
+

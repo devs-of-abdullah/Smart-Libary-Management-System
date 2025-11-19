@@ -13,6 +13,5 @@ namespace Entity
         public string FullName => $"{FirstName} {LastName}";
 
        
-        public ICollection<BookAuthor> BookAuthors { get; set; } = new List<BookAuthor>();
     }
 }

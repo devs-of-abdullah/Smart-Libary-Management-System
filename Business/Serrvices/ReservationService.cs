@@ -21,6 +21,18 @@ namespace Business.Services
         public async Task ReserveBookAsync(Reservation reservation)
         {
             await _reservationRepo.AddAsync(reservation);
+           
+        }
+        public async Task DeleteReservationAsync(int Id)
+        {
+            await _reservationRepo.DeleteAsync(Id);
+        }
+        public async Task<Reservation?> GetReservationByIdAsync(int id)
+        {
+            var result = await _reservationRepo.GetByIdAsync(id);
+            if (result == null) return null;
+            return result;
+            
         }
     }
 }

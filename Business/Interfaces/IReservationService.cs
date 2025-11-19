@@ -6,5 +6,7 @@ namespace Business.Interfaces
     {
         Task<IEnumerable<Reservation>> GetAllReservationsAsync();
         Task ReserveBookAsync(Reservation reservation);
+        Task DeleteReservationAsync(int id);
+        Task<Reservation?> GetReservationByIdAsync(int id);
     }
 }
