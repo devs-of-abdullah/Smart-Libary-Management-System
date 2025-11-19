@@ -7,14 +7,16 @@ using System.Text;
 public class JwtService
 {
     private readonly string _key;
+    private readonly string _issuer;
+    private readonly string _audience;
+    private readonly int _expireMinutes;
 
     public JwtService(IConfiguration config)
     {
-        string? envKey = Environment.GetEnvironmentVariable("JWT_SECRET");
-
-        string? configKey = config["Jwt:Key"];
-
-        _key = !string.IsNullOrWhiteSpace(envKey) ? envKey : !string.IsNullOrWhiteSpace(configKey) ? configKey : "";
+        _key = config["Jwt:Key"] ?? throw new InvalidOperationException("JWT Key is missing");
+        _issuer = config["Jwt:Issuer"] ?? throw new InvalidOperationException("JWT Issuer is missing");
+        _audience = config["Jwt:Audience"] ?? throw new InvalidOperationException("JWT Audience is missing");
+        _expireMinutes = int.Parse(config["Jwt:ExpireMinutes"] ?? "120");
     }
 
     public string GenerateToken(int staffId, string role)
@@ -29,12 +31,13 @@ public class JwtService
         var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
 
         var token = new JwtSecurityToken(
-            expires: DateTime.UtcNow.AddDays(7),
+            issuer: _issuer,
+            audience: _audience,
             claims: claims,
+            expires: DateTime.UtcNow.AddMinutes(_expireMinutes),
             signingCredentials: creds
         );
 
         return new JwtSecurityTokenHandler().WriteToken(token);
     }
 }
-
